@@ -1,6 +1,7 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+import Image from 'next/image';
+import LoginButton from '../components/login-btn';
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
   return (
@@ -15,6 +16,8 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <LoginButton />
 
         <p className={styles.description}>
           Get started by editing{' '}
@@ -67,5 +70,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
