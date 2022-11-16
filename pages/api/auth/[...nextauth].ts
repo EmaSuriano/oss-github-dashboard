@@ -17,6 +17,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      // @ts-expect-error allow to store access token in session
       session.accessToken = token.accessToken;
       return session;
     },

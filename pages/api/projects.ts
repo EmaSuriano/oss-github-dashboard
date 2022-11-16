@@ -20,7 +20,7 @@ export const getProject = async (token: JWT, fullName: string) => {
 
   const [owner, name] = fullName.split('/');
 
-  const projectQuery = await graphqlWithAuth(
+  const projectQuery = await graphqlWithAuth<any>(
     `query($owner: String!, $name: String!) {
       repository(owner: $owner, name: $name) {
         id

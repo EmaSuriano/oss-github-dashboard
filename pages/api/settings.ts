@@ -17,7 +17,7 @@ export const getSettings = async (token: JWT) => {
     },
   });
 
-  const gistsQuery = await graphqlWithAuth(`
+  const gistsQuery = await graphqlWithAuth<any>(`
     {
       viewer {
         gists(first: 100) {
@@ -40,7 +40,7 @@ export const getSettings = async (token: JWT) => {
     throw new Error('Config file not found');
   }
 
-  const gistQuery = await graphqlWithAuth(
+  const gistQuery = await graphqlWithAuth<any>(
     `query($name: String!) {
       viewer {
         gist(name: $name) {

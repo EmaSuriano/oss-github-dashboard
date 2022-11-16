@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { FC, ReactNode, useMemo } from 'react';
 
 import {
   useTable,
@@ -27,7 +27,13 @@ type Props = {
   status: string;
 };
 
-const CenteredCell: FC<{ value?: any }> = ({ value = null, children }) => (
+const CenteredCell = ({
+  value = null,
+  children,
+}: {
+  value?: any;
+  children: ReactNode;
+}) => (
   <Box display="flex" justifyContent="center">
     {value !== null ? value : children}
   </Box>
@@ -38,7 +44,7 @@ const TableRow = styled(Box).attrs({
   p: 3,
   display: 'flex',
 })<{
-  header: boolean;
+  header?: boolean;
 }>`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   cursor: pointer;
@@ -90,14 +96,16 @@ export const Table = ({ data, status }: Props) => {
       {
         Header: 'Status',
         accessor: 'url',
-        Cell: ({ value }) => (
-          <CenteredCell>
-            <img
-              src={`${value}/actions/workflows/master.yml/badge.svg`}
-              alt="Build"
-            />
-          </CenteredCell>
-        ),
+        Cell: ({ value }) => {
+          return (
+            <CenteredCell>
+              <img
+                src={`${value}/actions/workflows/master.yml/badge.svg`}
+                alt="Build"
+              />
+            </CenteredCell>
+          );
+        },
       },
     ],
     [],
@@ -125,11 +133,12 @@ export const Table = ({ data, status }: Props) => {
       {...getTableProps()}
     >
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <TableRow header {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column: any) => (
+        {headerGroups.map((headerGroup, i) => (
+          <TableRow key={i} header {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column: any, j) => (
               <TableItem
                 as="th"
+                key={j}
                 sorted={column.isSorted}
                 {...column.getHeaderProps(column.getSortByToggleProps())}
               >
@@ -148,13 +157,13 @@ export const Table = ({ data, status }: Props) => {
       </thead>
       <tbody {...getTableBodyProps()}>
         {status === 'success' ? (
-          page.map((row) => {
+          page.map((row, i) => {
             prepareRow(row);
             return (
-              <TableRow {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+              <TableRow {...row.getRowProps()} key={i}>
+                {row.cells.map((cell, j) => {
                   return (
-                    <TableItem as="td" {...cell.getCellProps()}>
+                    <TableItem as="td" key={j} {...cell.getCellProps()}>
                       {cell.render('Cell')}
                     </TableItem>
                   );
