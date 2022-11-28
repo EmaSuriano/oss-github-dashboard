@@ -1,9 +1,7 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { Box } from '@primer/react';
-import Layout from '../components/layout';
-import { Login } from '../components/Login';
-import { Table } from '../components/Table';
+import { Layout, Login, Table } from '../components';
 import { Project } from '../helpers/types';
 
 export default function IndexPage() {

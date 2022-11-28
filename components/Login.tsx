@@ -1,7 +1,6 @@
-import React from 'react';
 import { Box, Button, Link, StyledOcticon, Text } from '@primer/react';
 import { MarkGithubIcon } from '@primer/octicons-react';
-import { useSession, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 
 export const Login = () => {
   return (
