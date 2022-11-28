@@ -21,10 +21,10 @@ import {
   Truncate,
 } from '@primer/react';
 import { ChevronDownIcon, ChevronUpIcon } from '@primer/octicons-react';
+import { UseQueryResult } from 'react-query';
 
 type Props = {
-  data: Project[];
-  status: string;
+  query: UseQueryResult<Project[], unknown>;
 };
 
 const CenteredCell = ({
@@ -64,52 +64,59 @@ const TableItem = styled(Box)`
   flex-basis: 0;
 `;
 
-export const Table = ({ data, status }: Props) => {
-  const columns: Column<Project>[] = useMemo(
-    () => [
-      {
-        Header: 'Name',
-        accessor: 'name',
-        Cell: ({ value, row }) => (
-          <Truncate title={value} maxWidth={180}>
-            <Link href={row.original.url} target="_blank">
-              {value}
-            </Link>
-          </Truncate>
-        ),
-      },
-      {
-        Header: 'Issues',
-        accessor: (row) => row.issues.totalCount,
-        Cell: CenteredCell,
-      },
-      {
-        Header: 'Vulnerabilities',
-        accessor: (row) => row.vulnerabilityAlerts.totalCount,
-        Cell: CenteredCell,
-      },
-      {
-        Header: 'Pulls',
-        accessor: (row) => row.pullRequests.totalCount,
-        Cell: CenteredCell,
-      },
-      {
-        Header: 'Status',
-        accessor: 'url',
-        Cell: ({ value }) => {
-          return (
-            <CenteredCell>
-              <img
-                src={`${value}/actions/workflows/master.yml/badge.svg`}
-                alt="Build"
-              />
-            </CenteredCell>
-          );
-        },
-      },
-    ],
-    [],
-  );
+const columns: Column<Project>[] = [
+  {
+    Header: 'Name',
+    accessor: 'name',
+    Cell: ({ value, row }) => (
+      <Truncate title={value} maxWidth={180}>
+        <Link href={row.original.url} target="_blank">
+          {value}
+        </Link>
+      </Truncate>
+    ),
+  },
+  {
+    Header: 'Issues',
+    accessor: (row) => row.issues.totalCount,
+    Cell: CenteredCell,
+  },
+  {
+    Header: 'Vulnerabilities',
+    accessor: (row) => row.vulnerabilityAlerts.totalCount,
+    Cell: CenteredCell,
+  },
+  {
+    Header: 'Pulls',
+    accessor: (row) => row.pullRequests.totalCount,
+    Cell: CenteredCell,
+  },
+  {
+    Header: 'Status',
+    accessor: 'url',
+    Cell: ({ value }) => {
+      return (
+        <CenteredCell>
+          <img
+            src={`${value}/actions/workflows/master.yml/badge.svg`}
+            alt="Build"
+          />
+        </CenteredCell>
+      );
+    },
+  },
+];
+
+export const Table = ({ query }: Props) => {
+  const data = useMemo(() => {
+    switch (query.status) {
+      case 'success':
+        return query.data;
+
+      default:
+        return [];
+    }
+  }, [query.status, query.data]);
 
   const {
     getTableProps,
@@ -117,15 +124,22 @@ export const Table = ({ data, status }: Props) => {
     headerGroups,
     page,
     prepareRow,
-    gotoPage,
-    pageCount,
-    state: { pageIndex },
-  } = useTable({ data, columns }, useSortBy, usePagination);
+  } = useTable(
+    {
+      data,
+      columns,
+      manualPagination: true, // Tell the usePagination
+    },
+    useSortBy,
+    usePagination,
+  );
+
+  console.log(data);
 
   return (
     <Box
       as="table"
-      width="100%"
+      minWidth={1000}
       borderWidth="1px"
       borderStyle="solid"
       borderColor="border.primary"
@@ -156,7 +170,7 @@ export const Table = ({ data, status }: Props) => {
         ))}
       </thead>
       <tbody {...getTableBodyProps()}>
-        {status === 'success' ? (
+        {query.status === 'success' ? (
           page.map((row, i) => {
             prepareRow(row);
             return (

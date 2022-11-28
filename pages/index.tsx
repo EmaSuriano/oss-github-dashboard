@@ -1,35 +1,48 @@
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { Box } from '@primer/react';
-import { Layout, Login, Table } from '../components';
-import { Project } from '../helpers/types';
+import { useEffect } from 'react';
+import { Box, Button, StyledOcticon, Text } from '@primer/react';
+import { MarkGithubIcon } from '@primer/octicons-react';
+import { signIn } from 'next-auth/react';
+import { Layout } from '../components';
+import { useRouter } from 'next/router';
 
-export default function IndexPage() {
+export default function Login() {
   const { status } = useSession();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('/api/projects');
-      const json = await res.json();
-      if (json) {
-        setProjects(json);
-      }
-    };
     if (status === 'authenticated') {
-      fetchData();
+      router.push('/dashboard');
     }
-  }, [status]);
+  }, [status, router]);
 
   return (
     <Layout>
-      {status === 'authenticated' ? (
-        <Box maxWidth="1280px" margin="auto" marginTop={4}>
-          <Table data={projects} status="success" />
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center"
+          flexDirection="column"
+          borderColor="border.default"
+          borderWidth={1}
+          borderStyle="solid"
+          borderRadius={10}
+          margin={4}
+          padding={4}
+          gridGap={2}
+        >
+          <StyledOcticon icon={MarkGithubIcon} size={80} />
+          <Text as="h1" textAlign="center">
+            Open Source Dashboard
+          </Text>
+          <Text as="p" textAlign="center">
+            Quick overview of all your Open Sources projects in Github ✨
+          </Text>
+          <Button variant="primary" onClick={() => signIn('github')}>
+            Log in with Github
+          </Button>
         </Box>
-      ) : (
-        <Login />
-      )}
+      </Box>
     </Layout>
   );
 }
